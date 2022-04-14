@@ -14,9 +14,71 @@ $.ajax({
     }
 });
 
-// $.get("http://localhost:3000/demo").done(function (data) {
-//     console.log(data);
-// });
+
+$.ajax({
+    url : 'http://localhost:3000/getAttackTarget',
+    type : 'GET',
+    data : {
+    },
+    dataType:'json',
+    success : function(data) {      
+        buildGraph4(data)
+    },
+    error : function(request,error)
+    {
+        alert("Request: "+JSON.stringify(request));
+    }
+});
+
+
+$.ajax({
+    url : 'http://localhost:3000/getYearWiseAttack',
+    type : 'GET',
+    data : {
+    },
+    dataType:'json',
+    success : function(data) {      
+        buildGraph5(data)
+    },
+    error : function(request,error)
+    {
+        alert("Request: "+JSON.stringify(request));
+    }
+});
+
+
+$.ajax({
+    url : 'http://localhost:3000/getterrorGroups',
+    type : 'GET',
+    data : {
+    },
+    dataType:'json',
+    success : function(data) {      
+        console.log(data)        
+        buildGraph3(data.groups, data.casualities)
+    },
+    error : function(request,error)
+    {
+        alert("Request: "+JSON.stringify(request));
+    }
+});
+
+
+$.ajax({
+    url : 'http://localhost:3000/getRegionAttacks',
+    type : 'GET',
+    data : {
+    },
+    dataType:'json',
+    success : function(data) {      
+        buildGraph2(data)
+    },
+    error : function(request,error)
+    {
+        alert("Request: "+JSON.stringify(request));
+    }
+});
+
 
 
 
@@ -72,20 +134,70 @@ Highcharts.chart('container', {
 }
 
 
+function buildGraph3(groups, casualities){
+    Highcharts.chart('container3', {
+        chart: {
+            type: 'column',
+            options3d: {
+                enabled: true,
+                alpha: 10,
+                beta: 25,
+                depth: 80
+            }
+        },
+        title: {
+            text: 'Top 10 Terror Groups'
+        },
+        subtitle: {
+            text: ''
+        },
+        plotOptions: {
+            column: {
+                depth: 30
+            },
+            series: {
+                dataLabels: {
+                    enabled: true
+                }
+            }
+        },
+        xAxis: {
+            categories: groups,
+    
+            labels: {
+                skew3d: true,
+                autoRotationLimit: 40,
+                style: {
+                    fontSize: '10px'
+                }
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'No. of Casualities'
+            }
+        },
+        series: [{
+            name: 'No. of Casualities',
+            data: casualities
+        }]
+    });   
+    
+}
 
-
+function buildGraph2(data){
 Highcharts.chart('container2', {
     chart: {
         type: 'column'
     },
     title: {
-        text: 'No. of Casualities in different attacks and regions'
+        text: 'No. of Casualities in different Regions Based on Attack Type'
     },
     subtitle: {
         text: ''
     },
     xAxis: {
-        categories: ['Australia and Oceania', 'Central America and Carribean', 'Central Asia', 'East Asia', 'Eastern Europe',  'Middle East & North Africa', 'North America',  'South America', 'South Asia', 'Southeast Asia', 'Sub-Saharan Africa',  'Western Europe'],
+        categories:  data.regions,
         crosshair: true
     },
     yAxis: {
@@ -97,7 +209,7 @@ Highcharts.chart('container2', {
     tooltip: {
         headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
         pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-            '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+            '<td style="padding:0"><b>{point.y:.0f} </b></td></tr>',
         footerFormat: '</table>',
         shared: true,
         useHTML: true
@@ -110,37 +222,186 @@ Highcharts.chart('container2', {
     },
     series: [{
         name: 'Armed Assault',
-        data: [24, 113, 37, 33, 104, 225, 36, 128, 111, 93, 367, 148]
+        data: data.armedAssault
 
     }, {
         name: 'Assassination',
-        data: [15, 82, 30, 28, 76, 187, 27, 97, 87, 51, 205, 136]
+        data: data.assassination
     }, {
         name: 'Bombing/Explosion',
-        data: [28, 131, 56, 44, 209, 279, 48, 150, 123, 116, 356, 245]
+        data: data.bombing
 
     }, {
         name: 'Facility/Infrastructure Attack',
-        data: [26, 64, 16, 33, 82, 164, 37, 95, 94, 65, 203, 179]
+        data: data.facInfraAttack
 
     }, {
         name: 'Hijacking',
-        data: [3, 13, 7, 5, 10, 61, 7, 25, 32, 25, 60, 29]
+        data: data.hijacking
 
     }, {
         name: 'Hostage Taking (Barricade Incident)',
-        data: [5, 31, 3, 3, 14, 62, 14, 48, 42, 24, 64, 50]
+        data: data.hostBarricade
 
     }, {
         name: 'Hostage Taking (Kidnapping)',
-        data: [8, 69, 20, 10, 41, 150, 22, 95, 89, 67, 255, 61]
+        data: data.hostKid
     }, {
         name: 'Unarmed Assault',
-        data: [7, 13, 5, 19, 37, 57, 33, 24, 49, 14, 43, 56]
-
-    }, {
-        name: 'Unknown',
-        data: [9, 60, 12, 20, 32, 136, 14, 80, 83, 50, 208, 91]
+        data: data.unarmedAssault
 
     }]
 });
+}
+
+function buildGraph4(data){
+    Highcharts.chart('container4', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'No. of Casualities Based on Attack and Target Type'
+        },
+        subtitle: {
+            text: ''
+        },
+        xAxis: {
+            categories: data.targets,
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'No. of Casualities'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.0f} </b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Armed Assault',
+            data: data.armedAssault
+    
+        }, {
+            name: 'Assassination',
+            data: data.assassination
+        }, {
+            name: 'Bombing/Explosion',
+            data: data.bombing
+    
+        }, {
+            name: 'Facility/Infrastructure Attack',
+            data: data.facInfraAttack
+    
+        }, {
+            name: 'Hijacking',
+            data: data.hijacking
+    
+        }, {
+            name: 'Hostage Taking (Barricade Incident)',
+            data: data.hostBarricade
+    
+        }, {
+            name: 'Hostage Taking (Kidnapping)',
+            data: data.hostKid
+        }, {
+            name: 'Unarmed Assault',
+            data: data.unarmedAssault
+    
+        }]
+    });
+}
+
+
+function buildGraph5(data){
+    Highcharts.chart('container5', {
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: 'Trend of Number of Casualities Based on Region over Years'
+        },
+        subtitle: {
+            text: ''
+        },
+        xAxis: {
+            categories: data.year,
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'No. of Casualities'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.0f} </b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Australasia & Oceania',
+            data: data.australia
+    
+        }, {
+            name: 'Central America & Caribbean',
+            data: data.centralAmerica
+        }, {
+            name: 'East Asia',
+            data: data.eastAsia
+    
+        }, {
+            name: 'Eastern Europe',
+            data: data.eEurope
+    
+        }, {
+            name: 'Middle East & North Africa',
+            data: data.meNAfrica
+    
+        }, {
+            name: 'North America',
+            data: data.nAmerica
+    
+        }, {
+            name: 'South America',
+            data: data.sAmerica
+        }, {
+            name: 'South Asia',
+            data: data.sAsia
+    
+        }, {
+            name: 'Southeast Asia',
+            data: data.sEastAsia
+    
+        }, {
+            name: 'Sub-Saharan Africa',
+            data: data.subSaAfrica 
+    
+        }, {
+            name: 'Western Europe',
+            data: data.westEurope
+    
+        }]
+    });
+}

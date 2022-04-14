@@ -74,7 +74,7 @@ async function getRegionAttacks(page = 1){
 
  
 return {
-  targets,
+  regions,
   armedAssault,
   assassination,
   bombing,
